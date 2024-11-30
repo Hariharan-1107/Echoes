@@ -250,7 +250,7 @@ app.delete("/friends/:userid/:friendId", async (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.send(req.user);
+  res.send("Hello World");
 });
 
 server.listen(process.env.PORT || 8000, () => {
