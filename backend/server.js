@@ -16,12 +16,17 @@ const app = express();
 dotenv.config();
 
 app.use(bodyParser.json());
+
 const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "hariharan",
-  password: "1234567",
-  port: 5432,
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT || 5432,
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: false }
+      : false,
 });
 
 const server = http.createServer(app);
@@ -59,7 +64,7 @@ passport.use(
     {
       clientID: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
-      callbackURL: "http://localhost:8000/auth/google/home",
+      callbackURL: `${process.env.SERVER_URL}/auth/google/home`,
     },
     async (accessToken, refreshToken, profile, done) => {
       const account = profile._json;
@@ -248,6 +253,6 @@ app.get("/", (req, res) => {
   res.send(req.user);
 });
 
-server.listen(8000, () => {
+server.listen(process.env.PORT || 8000, () => {
   console.log("Server Up and Running");
 });

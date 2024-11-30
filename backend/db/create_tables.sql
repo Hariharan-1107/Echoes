@@ -1,0 +1,14 @@
+CREATE TABLE IF NOT EXISTS users (
+  googleid VARCHAR(255) PRIMARY KEY,
+  username VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL
+);
+
+-- Create Messages Table
+CREATE TABLE IF NOT EXISTS messages (
+  id SERIAL PRIMARY KEY,
+  sender_id VARCHAR(255) REFERENCES users(googleid) ON DELETE CASCADE,
+  receiver_id VARCHAR(255) REFERENCES users(googleid) ON DELETE CASCADE,
+  message TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
