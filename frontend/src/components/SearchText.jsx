@@ -3,8 +3,9 @@ import axios from "axios";
 import { io } from "socket.io-client";
 import { XIcon } from "@heroicons/react/solid"; // For the close button
 import ChatArea from "./ChatArea";
-
-const socket = io("http://localhost:8000");
+import dotenv from "dotenv";
+dotenv.config();
+const socket = io(`${process.env.SERVER_URL}`);
 
 export default function Text({
   data,
@@ -22,7 +23,7 @@ export default function Text({
     const fetchtexts = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/messages/${sender.googleid}/${data.googleid}`
+          `${process.env.SERVER_URL}/messages/${sender.googleid}/${data.googleid}`
         );
         setTextArray(response.data);
       } catch (error) {
@@ -53,7 +54,7 @@ export default function Text({
 
     try {
       socket.emit("send_message", sendpacket);
-      await axios.post("http://localhost:8000/messages", sendpacket);
+      await axios.post(`${process.env.SERVER_URL}/messages`, sendpacket);
       setMessage("");
     } catch (error) {
       console.error("Error sending message:", error);

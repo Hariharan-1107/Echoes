@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Text from "./Text";
 import { TrashIcon } from "@heroicons/react/solid"; // Import trash icon
-
+import dotenv from "dotenv";
+dotenv.config();
 export default function Friends({ user, friends, setFriends }) {
   const [showchat, setShowchat] = useState(false);
   const [receiver, setReceiver] = useState(null);
@@ -12,7 +13,7 @@ export default function Friends({ user, friends, setFriends }) {
   useEffect(() => {
     const fetchFriends = async () => {
       const response = await axios.get(
-        `http://localhost:8000/friends/${user.googleid}`
+        `${process.env.SERVER_URL}/friends/${user.googleid}`
       );
       setFriends(response.data);
     };
@@ -31,7 +32,7 @@ export default function Friends({ user, friends, setFriends }) {
     try {
       // Remove the friend from the backend
       const response = await axios.delete(
-        `http://localhost:8000/friends/${user.googleid}/${friendId}`
+        `${process.env.SERVER_URL}/friends/${user.googleid}/${friendId}`
       );
       console.log(response.data);
       // Remove the friend from the state

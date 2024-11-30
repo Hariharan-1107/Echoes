@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { io } from "socket.io-client";
 import { XIcon } from "@heroicons/react/solid";
-import ChatArea from "./ChatArea"; // Heroicons close icon
-const socket = io("http://localhost:8000");
+import ChatArea from "./ChatArea";
+import dotenv from "dotenv";
+dotenv.config(); // Heroicons close icon
+const socket = io(`${process.env.SERVER_URL}`);
 
 export default function Text({ data, sender, isOpen, setIsOpen }) {
   const [textArray, setTextArray] = useState([]);
@@ -20,7 +22,7 @@ export default function Text({ data, sender, isOpen, setIsOpen }) {
       try {
         console.log(sender, data);
         const response = await axios.get(
-          `http://localhost:8000/messages/${sender.googleid}/${data.googleid}`
+          `${process.env.SERVER_URL}/messages/${sender.googleid}/${data.googleid}`
         );
         setTextArray(response.data); // Update state with existing messages
         console.log("API Response:", response.data); // Debug the API response
@@ -60,7 +62,7 @@ export default function Text({ data, sender, isOpen, setIsOpen }) {
 
       // Optionally, update the backend for persistence
       const response = await axios.post(
-        "http://localhost:8000/messages",
+        `${process.env.SERVER_URL}/messages`,
         sendpacket
       );
 

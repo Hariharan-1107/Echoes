@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 
 import Searchpeople from "./components/Searchpeople"; // Assuming you have this component
 import Friends from "./components/Friends.jsx";
+import dotenv from "dotenv";
 
+dotenv.config();
 function App() {
   const [login, setLogin] = useState(false);
   const [user, setUser] = useState({});
@@ -12,7 +14,7 @@ function App() {
     const checkLogin = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/login-status",
+          `${process.env.SERVER_URL}/api/login-status`,
           { withCredentials: true }
         );
         if (response.data.loggedIn) {
@@ -29,11 +31,11 @@ function App() {
   }, []);
 
   const handleLogin = () => {
-    window.location.href = "http://localhost:8000/auth/google";
+    window.location.href = `${process.env.SERVER_URL}/auth/google`;
   };
 
   const handleLogout = async () => {
-    const response = await axios.get("http://localhost:8000/auth/logout");
+    const response = await axios.get(`${process.env.SERVER_URL}/auth/logout`);
     if (response.data.success) {
       setLogin(false);
     }
