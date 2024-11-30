@@ -3,8 +3,6 @@ import axios from "axios";
 import { io } from "socket.io-client";
 import { XIcon } from "@heroicons/react/solid"; // For the close button
 import ChatArea from "./ChatArea";
-import dotenv from "dotenv";
-dotenv.config();
 const socket = io(`${process.env.SERVER_URL}`);
 
 export default function Text({

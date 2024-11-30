@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Text from "./Text";
 import { TrashIcon } from "@heroicons/react/solid"; // Import trash icon
-import dotenv from "dotenv";
-dotenv.config();
 export default function Friends({ user, friends, setFriends }) {
   const [showchat, setShowchat] = useState(false);
   const [receiver, setReceiver] = useState(null);

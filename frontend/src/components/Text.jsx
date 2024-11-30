@@ -2,9 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { io } from "socket.io-client";
 import { XIcon } from "@heroicons/react/solid";
-import ChatArea from "./ChatArea";
-import dotenv from "dotenv";
-dotenv.config(); // Heroicons close icon
+import ChatArea from "./ChatArea"; // Heroicons close icon
 const socket = io(`${process.env.SERVER_URL}`);
 
 export default function Text({ data, sender, isOpen, setIsOpen }) {

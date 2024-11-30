@@ -3,9 +3,6 @@ import { useEffect, useState } from "react";
 
 import Searchpeople from "./components/Searchpeople"; // Assuming you have this component
 import Friends from "./components/Friends.jsx";
-import dotenv from "dotenv";
-
-dotenv.config();
 function App() {
   const [login, setLogin] = useState(false);
   const [user, setUser] = useState({});

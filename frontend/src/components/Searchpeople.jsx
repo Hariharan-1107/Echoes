@@ -1,8 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
 import SearchText from "./SearchText";
-import dotenv from "dotenv";
-dotenv.config();
 export default function Searchpeople({ user, friends, setFriends }) {
   const [receiver, setReceiver] = useState("");
   const [receiverdata, setReceiverdata] = useState(null);
