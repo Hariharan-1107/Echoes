@@ -28,7 +28,7 @@ const pool = new Pool({
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL,
+    origin: "https://echoes-1.onrender.com",
     credentials: true,
   },
 });
@@ -36,19 +36,23 @@ const io = new Server(server, {
 app.use(
   cors({
     credentials: true,
-    origin: process.env.CLIENT_URL,
+    origin: "https://echoes-1.onrender.com", // Ensure this matches your client
   })
 );
 
 app.use(
   session({
     secret: process.env.COOKIE_SECRET,
-    cookie: {
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    },
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production", // Use HTTPS in production
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Cross-origin cookies in production
+      httpOnly: true, // Prevent client-side script access to cookies
+    },
+    store: new connectPgSimple(session)({
+      pool: pool,
+    }),
   })
 );
 
