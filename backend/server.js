@@ -64,7 +64,7 @@ passport.use(
     {
       clientID: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
-      callbackURL: `${process.env.SERVER_URL}/auth/google/home`,
+      callbackURL: `https://echoes-av5f.onrender.com/auth/google/home`,
     },
     async (accessToken, refreshToken, profile, done) => {
       const account = profile._json;
