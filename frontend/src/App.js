@@ -11,40 +11,31 @@ function App() {
   const [friends, setFriends] = useState([]);
 
   useEffect(() => {
-    // Check if user data is passed in the URL query parameters
-    const params = new URLSearchParams(window.location.search);
-    const userData = params.get("userData");
+    // Check if user data is stored in localStorage
+    const storedUser = localStorage.getItem("user");
 
-    if (userData) {
-      try {
-        // Parse the user data and set it
-        const parsedUser = JSON.parse(decodeURIComponent(userData));
-        const newUrl = window.location.origin + window.location.pathname;
-        window.history.replaceState({}, document.title, newUrl);
-        console.log(parsedUser.googleid);
-        if (parsedUser.googleid) {
-          const checkLogin = async () => {
-            try {
-              const response = await axios.get(
-                `https://echoes-av5f.onrender.com/api/login-status/${parsedUser.googleid}`,
-                { withCredentials: true }
-              );
-              if (response.data.loggedIn) {
-                setLogin(true);
-                console.log(response.data.user);
-                setUser(response.data.user);
-                console.log(user);
-              } else {
-                setLogin(false);
-              }
-            } catch (err) {
-              console.error(err);
-            }
-          };
-          checkLogin();
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+      setLogin(true);
+    } else {
+      // Check if user data is passed in the URL query parameters
+      const params = new URLSearchParams(window.location.search);
+      const userData = params.get("userData");
+
+      if (userData) {
+        try {
+          const parsedUser = JSON.parse(decodeURIComponent(userData));
+          localStorage.setItem("user", JSON.stringify(parsedUser)); // Save user data to localStorage
+          setUser(parsedUser);
+          setLogin(true);
+
+          // Clean up the URL
+          const newUrl = window.location.origin + window.location.pathname;
+          window.history.replaceState({}, document.title, newUrl);
+        } catch (error) {
+          console.error("Failed to parse user data:", error);
         }
-      } catch (error) {
-        console.error("Failed to parse user data:", error);
       }
     }
   }, []);
@@ -61,7 +52,7 @@ function App() {
       if (response.data.success) {
         setLogin(false);
         setUser({});
-        localStorage.removeItem("user");
+        localStorage.removeItem("user"); // Clear user data from localStorage
       }
     } catch (err) {
       console.error("Logout failed:", err);
@@ -106,7 +97,6 @@ function App() {
 
           {/* Chat Component */}
           <div className="flex justify-center items-center h-screen w-full max-w-5xl mx-auto mt-16">
-            <h1>Hello {user.username}</h1>
             <Friends user={user} friends={friends} setFriends={setFriends} />
           </div>
         </div>
