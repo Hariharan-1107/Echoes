@@ -19,38 +19,31 @@ function App() {
       try {
         // Parse the user data and set it
         const parsedUser = JSON.parse(decodeURIComponent(userData));
-        setLogin(true);
-
-        // Store the user data in localStorage for persistence
-        localStorage.setItem("user", JSON.stringify(parsedUser));
-
-        // Clean the URL to remove the query parameters
         const newUrl = window.location.origin + window.location.pathname;
         window.history.replaceState({}, document.title, newUrl);
         console.log(parsedUser.googleid);
+        if (parsedUser.googleid) {
+          const checkLogin = async () => {
+            try {
+              const response = await axios.get(
+                `https://echoes-av5f.onrender.com/api/login-status/${parsedUser.googleid}`,
+                { withCredentials: true }
+              );
+              if (response.data.loggedIn) {
+                setLogin(true);
+                setUser(response.data.user);
+              } else {
+                setLogin(false);
+              }
+            } catch (err) {
+              console.error(err);
+            }
+          };
+          checkLogin();
+        }
       } catch (error) {
         console.error("Failed to parse user data:", error);
       }
-    } else {
-      // If no query parameters, verify login status with the server
-      const checkLogin = async () => {
-        try {
-          console.log(user);
-          const response = await axios.get(
-            `https://echoes-av5f.onrender.com/api/login-status`,
-            { withCredentials: true }
-          );
-          if (response.data.loggedIn) {
-            setLogin(true);
-            setUser(response.data.user);
-          } else {
-            setLogin(false);
-          }
-        } catch (err) {
-          console.error(err);
-        }
-      };
-      checkLogin();
     }
   }, []);
 

@@ -115,8 +115,9 @@ app.get("/auth/google/home", async (req, res) => {
   }
 });
 
-app.get("/api/login-status", (req, res) => {
-  console.log(req.session.user);
+app.get("/api/login-status/:id", (req, res) => {
+  const id = req.params.id;
+  console.log(id);
   if (req.session.user) {
     res.json({ loggedIn: true, user: req.session.user });
   } else {
