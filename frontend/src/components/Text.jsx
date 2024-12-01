@@ -3,7 +3,7 @@ import axios from "axios";
 import { io } from "socket.io-client";
 import { XIcon } from "@heroicons/react/solid";
 import ChatArea from "./ChatArea"; // Heroicons close icon
-const socket = io(`${process.env.SERVER_URL}`);
+const socket = io(`https://echoes-av5f.onrender.com`);
 
 export default function Text({ data, sender, isOpen, setIsOpen }) {
   const [textArray, setTextArray] = useState([]);
@@ -20,7 +20,7 @@ export default function Text({ data, sender, isOpen, setIsOpen }) {
       try {
         console.log(sender, data);
         const response = await axios.get(
-          `${process.env.SERVER_URL}/messages/${sender.googleid}/${data.googleid}`
+          `https://echoes-av5f.onrender.com/messages/${sender.googleid}/${data.googleid}`
         );
         setTextArray(response.data); // Update state with existing messages
         console.log("API Response:", response.data); // Debug the API response
@@ -60,7 +60,7 @@ export default function Text({ data, sender, isOpen, setIsOpen }) {
 
       // Optionally, update the backend for persistence
       const response = await axios.post(
-        `${process.env.SERVER_URL}/messages`,
+        `https://echoes-av5f.onrender.com/messages`,
         sendpacket
       );
 

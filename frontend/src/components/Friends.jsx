@@ -11,7 +11,7 @@ export default function Friends({ user, friends, setFriends }) {
   useEffect(() => {
     const fetchFriends = async () => {
       const response = await axios.get(
-        `${process.env.SERVER_URL}/friends/${user.googleid}`
+        `https://echoes-av5f.onrender.com/friends/${user.googleid}`
       );
       setFriends(response.data);
     };
@@ -30,7 +30,7 @@ export default function Friends({ user, friends, setFriends }) {
     try {
       // Remove the friend from the backend
       const response = await axios.delete(
-        `${process.env.SERVER_URL}/friends/${user.googleid}/${friendId}`
+        `https://echoes-av5f.onrender.com/friends/${user.googleid}/${friendId}`
       );
       console.log(response.data);
       // Remove the friend from the state

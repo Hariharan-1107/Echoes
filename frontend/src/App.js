@@ -28,11 +28,13 @@ function App() {
   }, []);
 
   const handleLogin = () => {
-    window.location.href = `${process.env.SERVER_URL}/auth/google`;
+    window.location.href = `https://echoes-av5f.onrender.com/auth/google`;
   };
 
   const handleLogout = async () => {
-    const response = await axios.get(`${process.env.SERVER_URL}/auth/logout`);
+    const response = await axios.get(
+      `https://echoes-av5f.onrender.com/auth/logout`
+    );
     if (response.data.success) {
       setLogin(false);
     }

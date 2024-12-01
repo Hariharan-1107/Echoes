@@ -9,7 +9,7 @@ export default function Searchpeople({ user, friends, setFriends }) {
     e.preventDefault();
     try {
       const response = await axios.get(
-        `${process.env.SERVER_URL}/search/${receiver}`
+        `https://echoes-av5f.onrender.com/search/${receiver}`
       );
       setReceiverdata(response.data);
       setIsOpen(true);

@@ -3,7 +3,7 @@ import axios from "axios";
 import { io } from "socket.io-client";
 import { XIcon } from "@heroicons/react/solid"; // For the close button
 import ChatArea from "./ChatArea";
-const socket = io(`${process.env.SERVER_URL}`);
+const socket = io(`https://echoes-av5f.onrender.com`);
 
 export default function Text({
   data,
@@ -21,7 +21,7 @@ export default function Text({
     const fetchtexts = async () => {
       try {
         const response = await axios.get(
-          `${process.env.SERVER_URL}/messages/${sender.googleid}/${data.googleid}`
+          `https://echoes-av5f.onrender.com/messages/${sender.googleid}/${data.googleid}`
         );
         setTextArray(response.data);
       } catch (error) {
@@ -52,7 +52,7 @@ export default function Text({
 
     try {
       socket.emit("send_message", sendpacket);
-      await axios.post(`${process.env.SERVER_URL}/messages`, sendpacket);
+      await axios.post(`https://echoes-av5f.onrender.com/messages`, sendpacket);
       setMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
