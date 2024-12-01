@@ -7,6 +7,7 @@ import session from "express-session";
 import { google } from "googleapis";
 import http from "http";
 import { Server } from "socket.io";
+import connectPgSimple from "connect-pg-simple";
 
 const { Pool } = pkg;
 dotenv.config();
@@ -82,7 +83,7 @@ app.get("/auth/google/home", async (req, res) => {
 
     const userInfo = await oauth2.userinfo.get();
     const account = userInfo.data;
-    console.log(account);
+
     // Check or insert user into the database
     const currentuser = await pool.query(
       "SELECT * FROM users WHERE googleid=$1",
@@ -101,6 +102,8 @@ app.get("/auth/google/home", async (req, res) => {
       googleid: account.id,
       username: account.name,
     };
+
+    console.log(req.session.user);
 
     res.redirect(process.env.CLIENT_URL); // Redirect to client app
   } catch (err) {
