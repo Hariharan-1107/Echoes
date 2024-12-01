@@ -1,20 +1,33 @@
 import { useState } from "react";
 import axios from "axios";
 import SearchText from "./SearchText";
+
 export default function Searchpeople({ user, friends, setFriends }) {
   const [receiver, setReceiver] = useState("");
   const [receiverdata, setReceiverdata] = useState(null);
   const [isOpen, setIsOpen] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const handleSearch = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.get(
         `https://echoes-av5f.onrender.com/search/${receiver}`
       );
-      setReceiverdata(response.data);
-      setIsOpen(true);
+      if (response.data) {
+        if (response.data.username) {
+          setReceiverdata(response.data);
+          setIsOpen(true);
+          setErrorMessage(""); // Clear error if user is found
+        } else {
+          setReceiverdata(null);
+          setErrorMessage("No user found with this email.");
+        }
+      }
     } catch (err) {
       console.error(err);
+      setReceiverdata(null);
+      setErrorMessage("Error while searching. Please try again.");
     }
   };
 
@@ -40,22 +53,20 @@ export default function Searchpeople({ user, friends, setFriends }) {
         </button>
       </form>
 
-      {receiverdata && (
+      {errorMessage && (
+        <div className="text-red-500 font-medium">{errorMessage}</div>
+      )}
+
+      {receiverdata && receiverdata.username && (
         <div className="flex justify-center">
-          {receiverdata.username ? (
-            <SearchText
-              data={receiverdata}
-              sender={user}
-              isOpen={isOpen}
-              setIsOpen={setIsOpen}
-              friends={friends}
-              setFriends={setFriends}
-            />
-          ) : (
-            <p className="text-red-500 font-medium">
-              No user found with this email.
-            </p>
-          )}
+          <SearchText
+            data={receiverdata}
+            sender={user}
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+            friends={friends}
+            setFriends={setFriends}
+          />
         </div>
       )}
     </div>
