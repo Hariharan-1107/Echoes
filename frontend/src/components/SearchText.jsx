@@ -98,7 +98,7 @@ export default function Text({
 
           <div className="flex justify-between items-center space-x-4">
             <button
-              className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex-1"
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
               onClick={handlenewFriend}
             >
               Add to Friends
