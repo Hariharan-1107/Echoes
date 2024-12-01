@@ -31,7 +31,9 @@ function App() {
               );
               if (response.data.loggedIn) {
                 setLogin(true);
+                console.log(response.data.user);
                 setUser(response.data.user);
+                console.log(user);
               } else {
                 setLogin(false);
               }
