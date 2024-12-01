@@ -51,9 +51,15 @@ const PgSession = connectPgSimple(session);
 app.use(
   session({
     secret: process.env.COOKIE_SECRET,
+    store: new PgSession({
+      pool: pool,
+      tableName: "session", // Make sure you have created this table
+    }),
     cookie: {
-      secure: process.env.NODE_ENV === "production" ? true : "auto",
+      secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
     },
     resave: false,
     saveUninitialized: false,
@@ -103,18 +109,21 @@ passport.serializeUser((user, done) => {
   console.log("Serializing user:", user);
   done(null, { googleid: user.googleid });
 });
-passport.deserializeUser(async (user, done) => {
+passport.deserializeUser(async (userObj, done) => {
   try {
-    console.log("Deserializing user:", user);
+    console.log("Full deserialization user object:", userObj);
 
-    // Assuming user contains googleid from serialization
+    // Ensure you're using the correct identifier
     const result = await pool.query("SELECT * FROM users WHERE googleid = $1", [
-      user.googleid,
+      userObj.googleid || userObj.sub,
     ]);
+
+    console.log("Deserialization query result:", result.rows);
 
     if (result.rows.length > 0) {
       done(null, result.rows[0]);
     } else {
+      console.error("User not found during deserialization");
       done(new Error("User not found"));
     }
   } catch (err) {
@@ -144,12 +153,13 @@ app.get("/search/:receiver", async (req, res) => {
 });
 
 app.get("/api/login-status", (req, res) => {
-  console.log(res);
+  console.log("Login status request received");
+  console.log("Is Authenticated:", req.isAuthenticated());
+  console.log("User object:", req.user);
+
   if (req.isAuthenticated()) {
-    // User is logged in
     res.json({ loggedIn: true, user: req.user });
   } else {
-    // User is not logged in
     res.json({ loggedIn: false });
   }
 });
