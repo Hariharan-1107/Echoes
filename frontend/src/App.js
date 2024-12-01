@@ -59,7 +59,7 @@ function App() {
   return (
     <div className="min-h-screen">
       {!login ? (
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-500 to-blue-500 text-white">
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-blue-200 text-gray-800">
           {/* Welcome Content */}
           <div className="text-center space-y-6">
             <h1 className="text-5xl font-bold drop-shadow-lg">
@@ -67,8 +67,13 @@ function App() {
             </h1>
             <button
               onClick={handleLogin}
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-lg"
+              className="flex items-center justify-center px-6 py-3 bg-navy text-white font-medium rounded-lg shadow-lg hover:bg-blue-900"
             >
+              <img
+                src="https://www.gstatic.com/images/branding/product/1x/gsa_android_512dp.png"
+                alt="Google"
+                className="w-5 h-5 mr-2"
+              />
               Continue with Google
             </button>
           </div>
