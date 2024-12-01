@@ -47,14 +47,10 @@ const PgSession = connectPgSimple(session);
 
 app.use(
   session({
-    store: new PgSession({
-      pool: pool, // Use your existing PostgreSQL connection pool
-    }),
     secret: process.env.COOKIE_SECRET,
     cookie: {
-      secure: "true", // Secure cookies in production
-      sameSite: "none", // Required for cross-origin cookies
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
+      secure: process.env.NODE_ENV === "production" ? "true" : "auto",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     },
     resave: false,
     saveUninitialized: false,
@@ -258,7 +254,7 @@ app.delete("/friends/:userid/:friendId", async (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("Hello World");
+  res.send(process.env.NODE_ENV);
 });
 
 server.listen(process.env.PORT || 8000, () => {
