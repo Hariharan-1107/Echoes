@@ -106,7 +106,7 @@ passport.use(
   )
 );
 passport.serializeUser((user, done) => {
-  console.log("Serializing user:", user);
+  console.log("user:", user);
   done(null, { googleid: user.googleid });
 });
 passport.deserializeUser(async (userObj, done) => {
