@@ -11,8 +11,10 @@ function App() {
     const checkLogin = async () => {
       try {
         const response = await axios.get(
-          `${process.env.SERVER_URL}/api/login-status`,
-          { withCredentials: true }
+          `https://echoes-av5f.onrender.com/api/login-status`,
+          {
+            withCredentials: true,
+          }
         );
         if (response.data.loggedIn) {
           setLogin(true);
