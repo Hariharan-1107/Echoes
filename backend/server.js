@@ -10,13 +10,10 @@ import http from "http";
 import { Server } from "socket.io";
 import connectPgSimple from "connect-pg-simple";
 import { promises } from "fs";
-
 const { Pool } = pkg;
 const app = express();
 dotenv.config();
-
 app.use(bodyParser.json());
-
 const pool = new Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
@@ -31,50 +28,35 @@ const pool = new Pool({
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "https://echoes-1.onrender.com",
-    methods: ["GET", "POST"],
+    origin: process.env.CLIENT_URL,
     credentials: true,
   },
 });
-
 app.use(
   cors({
-    origin: "https://echoes-1.onrender.com",
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    origin: process.env.CLIENT_URL,
   })
 );
-
-const PgSession = connectPgSimple(session);
-
 app.use(
   session({
     secret: process.env.COOKIE_SECRET,
-    store: new PgSession({
-      pool: pool,
-      tableName: "session", // Make sure you have created this table
-    }),
     cookie: {
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production" ? true : "auto",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
     },
     resave: false,
     saveUninitialized: false,
   })
 );
-
 app.use(passport.initialize());
 app.use(passport.session());
-
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
-      callbackURL: `https://echoes-av5f.onrender.com/auth/google/home`,
+      callbackURL: "https://echoes-av5f.onrender.com/auth/google/home",
     },
     async (accessToken, refreshToken, profile, done) => {
       const account = profile._json;
@@ -106,32 +88,11 @@ passport.use(
   )
 );
 passport.serializeUser((user, done) => {
-  console.log("user:", user);
-  done(null, { googleid: user.googleid });
+  done(null, user);
 });
-passport.deserializeUser(async (userObj, done) => {
-  try {
-    console.log("Full deserialization user object:", userObj);
-
-    // Ensure you're using the correct identifier
-    const result = await pool.query("SELECT * FROM users WHERE googleid = $1", [
-      userObj.googleid || userObj.sub,
-    ]);
-
-    console.log("Deserialization query result:", result.rows);
-
-    if (result.rows.length > 0) {
-      done(null, result.rows[0]);
-    } else {
-      console.error("User not found during deserialization");
-      done(new Error("User not found"));
-    }
-  } catch (err) {
-    console.error("Deserialization error:", err);
-    done(err);
-  }
+passport.deserializeUser((user, done) => {
+  done(null, user);
 });
-
 app.get(
   "/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
@@ -140,10 +101,9 @@ app.get(
   "/auth/google/home",
   passport.authenticate("google", { session: true }),
   (req, res) => {
-    res.redirect("https://echoes-1.onrender.com");
+    res.redirect(process.env.CLIENT_URL);
   }
 );
-
 app.get("/search/:receiver", async (req, res) => {
   const receiver = req.params.receiver;
   const receiverdata = await pool.query("SELECT * FROM users WHERE email=$1", [
@@ -151,17 +111,15 @@ app.get("/search/:receiver", async (req, res) => {
   ]);
   res.send(receiverdata.rows[0]);
 });
-
 app.get("/api/login-status", (req, res) => {
-  console.log(req.session.cookie);
-
   if (req.isAuthenticated()) {
+    // User is logged in
     res.json({ loggedIn: true, user: req.user });
   } else {
+    // User is not logged in
     res.json({ loggedIn: false });
   }
 });
-
 app.get("/auth/logout", (req, res, next) => {
   req.logout((err) => {
     if (err) {
@@ -181,7 +139,6 @@ app.get("/auth/logout", (req, res, next) => {
     });
   });
 });
-
 app.get("/messages/:sendid/:receiveid", async (req, res) => {
   const sendid = req.params.sendid;
   const receiveid = req.params.receiveid;
@@ -197,9 +154,7 @@ app.get("/messages/:sendid/:receiveid", async (req, res) => {
   messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
   res.send(messages);
 });
-
 let userRooms = new Set();
-
 io.on("connection", (socket) => {
   socket.on("joinRoom", (room) => {
     if (!userRooms.has(socket.id)) {
@@ -208,11 +163,9 @@ io.on("connection", (socket) => {
       console.log(`User joined room: ${room}`);
     }
   });
-
   socket.on("send_message", async (message) => {
     const room = [message.sender_id, message.receiver_id].sort().join("-");
     io.to(room).emit("receive_message", message); // Emit message to the correct room
-
     try {
       await pool.query(
         "INSERT INTO messages(sender_id,receiver_id,message)VALUES($1,$2,$3)",
@@ -223,12 +176,10 @@ io.on("connection", (socket) => {
       console.error("Error saving message to DB:", err);
     }
   });
-
   socket.on("disconnect", () => {
     userRooms.delete(socket.id); // Remove user from tracked rooms on disconnect
   });
 });
-
 app.get("/friends/:id", async (req, res) => {
   const id = req.params.id;
   const receiversid = await pool.query(
@@ -239,7 +190,6 @@ app.get("/friends/:id", async (req, res) => {
     "SELECT DISTINCT sender_id FROM messages WHERE receiver_id=$1",
     [id]
   );
-
   const reciveArray = await Promise.all(
     receiversid.rows.map(async (fr) => {
       const user = await pool.query("SELECT * FROM users WHERE googleid=$1", [
@@ -248,7 +198,6 @@ app.get("/friends/:id", async (req, res) => {
       return user.rows[0];
     })
   );
-
   const sendArray = await Promise.all(
     sendersid.rows.map(async (fr) => {
       const user = await pool.query("SELECT * FROM users WHERE googleid=$1", [
@@ -264,7 +213,6 @@ app.get("/friends/:id", async (req, res) => {
   );
   res.send(FriendsArray);
 });
-
 app.delete("/friends/:userid/:friendId", async (req, res) => {
   const userid = req.params.userid;
   const friendId = req.params.friendId;
@@ -279,11 +227,9 @@ app.delete("/friends/:userid/:friendId", async (req, res) => {
     res.send(0);
   }
 });
-
 app.get("/", (req, res) => {
-  res.send(process.env.NODE_ENV);
+  res.send(req.user);
 });
-
-server.listen(process.env.PORT || 8000, () => {
+server.listen(8000, () => {
   console.log("Server Up and Running");
 });
