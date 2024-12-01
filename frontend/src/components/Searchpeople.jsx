@@ -53,12 +53,13 @@ export default function Searchpeople({ user, friends, setFriends }) {
         </button>
       </form>
 
+      {/* Error message displayed below the search bar */}
       {errorMessage && (
-        <div className="text-red-500 font-medium">{errorMessage}</div>
+        <div className="text-red-500 font-medium mt-2">{errorMessage}</div>
       )}
 
       {receiverdata && receiverdata.username && (
-        <div className="flex justify-center">
+        <div className="flex justify-center mt-6">
           <SearchText
             data={receiverdata}
             sender={user}
