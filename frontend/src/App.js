@@ -106,6 +106,7 @@ function App() {
 
           {/* Chat Component */}
           <div className="flex justify-center items-center h-screen w-full max-w-5xl mx-auto mt-16">
+            <h1>Hello {user.username}</h1>
             <Friends user={user} friends={friends} setFriends={setFriends} />
           </div>
         </div>
