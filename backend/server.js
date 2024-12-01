@@ -122,7 +122,7 @@ app.get("/api/login-status/:id", async (req, res) => {
     const user = await pool.query("SELECT * from users where googleid=$1", [
       id,
     ]);
-    res.json({ loggedIn: true, user: user });
+    res.json({ loggedIn: true, user: user.rows });
   } else {
     res.json({ loggedIn: false });
   }
