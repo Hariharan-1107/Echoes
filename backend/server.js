@@ -144,14 +144,14 @@ app.get("/search/:receiver", async (req, res) => {
 });
 
 app.get("/api/login-status", (req, res) => {
-  res.send(req);
-  // if (req.isAuthenticated()) {
-  //   // User is logged in
-  //   res.json({ loggedIn: true, user: req.user });
-  // } else {
-  //   // User is not logged in
-  //   res.json({ loggedIn: false });
-  // }
+  console.log(res);
+  if (req.isAuthenticated()) {
+    // User is logged in
+    res.json({ loggedIn: true, user: req.user });
+  } else {
+    // User is not logged in
+    res.json({ loggedIn: false });
+  }
 });
 
 app.get("/auth/logout", (req, res, next) => {
