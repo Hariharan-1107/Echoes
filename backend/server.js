@@ -103,8 +103,6 @@ app.get("/auth/google/home", async (req, res) => {
       username: account.name,
     };
 
-    console.log(req.session.user);
-
     res.redirect(process.env.CLIENT_URL); // Redirect to client app
   } catch (err) {
     console.error("Error during Google authentication:", err);
@@ -113,6 +111,7 @@ app.get("/auth/google/home", async (req, res) => {
 });
 
 app.get("/api/login-status", (req, res) => {
+  console.log(req.session.user);
   if (req.session.user) {
     res.json({ loggedIn: true, user: req.session.user });
   } else {
