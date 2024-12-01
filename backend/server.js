@@ -45,10 +45,14 @@ app.use(
 
 app.use(
   session({
+    store: new (connectPgSimple(session))({
+      pool: pool, // Use your existing PostgreSQL connection pool
+    }),
     secret: process.env.COOKIE_SECRET,
     cookie: {
-      secure: "true",
+      secure: "true", // Secure cookies in production
       sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
     },
     resave: false,
     saveUninitialized: false,
@@ -95,9 +99,11 @@ passport.use(
   )
 );
 passport.serializeUser((user, done) => {
+  console.log("Serializing user:", user);
   done(null, user);
 });
 passport.deserializeUser((user, done) => {
+  console.log("Deserializing user:", user);
   done(null, user);
 });
 app.get(
