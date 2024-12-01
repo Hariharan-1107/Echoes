@@ -16,6 +16,7 @@ function App() {
             withCredentials: true,
           }
         );
+        console.log(response.data);
         if (response.data.loggedIn) {
           setLogin(true);
           setUser(response.data.user);
