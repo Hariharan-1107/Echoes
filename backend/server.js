@@ -31,7 +31,7 @@ const pool = new Pool({
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL,
+    origin: "https://echoes-1.onrender.com",
     credentials: true,
   },
 });
@@ -39,7 +39,7 @@ const io = new Server(server, {
 app.use(
   cors({
     credentials: true,
-    origin: process.env.CLIENT_URL,
+    origin: "https://echoes-1.onrender.com",
   })
 );
 

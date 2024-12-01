@@ -1,8 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-
 import Searchpeople from "./components/Searchpeople"; // Assuming you have this component
 import Friends from "./components/Friends.jsx";
+axios.defaults.withCredentials = true;
 function App() {
   const [login, setLogin] = useState(false);
   const [user, setUser] = useState({});
