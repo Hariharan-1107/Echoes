@@ -105,8 +105,10 @@ app.get("/auth/google/home", async (req, res) => {
       googleid: account.id,
       username: account.name,
     };
-
-    res.redirect(process.env.CLIENT_URL); // Redirect to client app
+    const redirectUrl = `${
+      process.env.CLIENT_URL
+    }?userData=${encodeURIComponent(JSON.stringify(req.session.user))}`;
+    res.redirect(redirectUrl);
   } catch (err) {
     console.error("Error during Google authentication:", err);
     res.status(500).send("Authentication failed");
