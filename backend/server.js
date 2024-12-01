@@ -82,7 +82,7 @@ app.get("/auth/google/home", async (req, res) => {
 
     const userInfo = await oauth2.userinfo.get();
     const account = userInfo.data;
-
+    console.log(account);
     // Check or insert user into the database
     const currentuser = await pool.query(
       "SELECT * FROM users WHERE googleid=$1",
