@@ -67,7 +67,7 @@ function App() {
             </h1>
             <button
               onClick={handleLogin}
-              className="px-6 py-3 font-medium rounded-lg shadow-lg bg-[#001f5c] text-white hover:bg-[#001544] transition-colors duration-200"
+              className="px-6 py-3 font-medium rounded-lg shadow-lg bg-blue-800 text-white hover:bg-blue-900 transition-colors duration-200"
             >
               Continue with Google
             </button>
