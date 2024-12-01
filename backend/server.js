@@ -3,16 +3,15 @@ import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import cors from "cors";
 import pkg from "pg";
-import passport from "passport";
 import session from "express-session";
-import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { google } from "googleapis";
 import http from "http";
 import { Server } from "socket.io";
-import connectPgSimple from "connect-pg-simple";
-import { promises } from "fs";
+
 const { Pool } = pkg;
-const app = express();
 dotenv.config();
+
+const app = express();
 app.use(bodyParser.json());
 const pool = new Pool({
   user: process.env.DB_USER,
@@ -32,111 +31,104 @@ const io = new Server(server, {
     credentials: true,
   },
 });
+
 app.use(
   cors({
     credentials: true,
     origin: process.env.CLIENT_URL,
   })
 );
+
 app.use(
   session({
     secret: process.env.COOKIE_SECRET,
     cookie: {
-      secure: process.env.NODE_ENV === "production" ? true : "auto",
+      secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     },
     resave: false,
     saveUninitialized: false,
   })
 );
-app.use(passport.initialize());
-app.use(passport.session());
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.CLIENT_ID,
-      clientSecret: process.env.CLIENT_SECRET,
-      callbackURL: "https://echoes-av5f.onrender.com/auth/google/home",
-    },
-    async (accessToken, refreshToken, profile, done) => {
-      const account = profile._json;
-      let user = {};
-      try {
-        const currentuser = await pool.query(
-          "SELECT * FROM users WHERE googleid=$1",
-          [account.sub]
-        );
-        if (currentuser.rows.length === 0) {
-          //INSERT USER
-          await pool.query(
-            "INSERT INTO users(googleid,username,email)VALUES($1,$2,$3)",
-            [account.sub, account.name, account.email]
-          );
-          user = { googleid: account.googleid, username: account.name };
-        } else {
-          googleid: currentuser.rows[0].googleid,
-            (user = {
-              googleid: currentuser.rows[0].googleid,
-              username: currentuser.rows[0].username,
-            });
-        }
-        done(null, user);
-      } catch (err) {
-        done(err);
-      }
+
+// Google OAuth configuration
+const oauth2Client = new google.auth.OAuth2(
+  process.env.CLIENT_ID,
+  process.env.CLIENT_SECRET,
+  "https://echoes-av5f.onrender.com/auth/google/callback"
+);
+
+// Define scopes
+const SCOPES = ["profile", "email"];
+
+// Routes
+app.get("/auth/google", (req, res) => {
+  const url = oauth2Client.generateAuthUrl({
+    access_type: "offline",
+    scope: SCOPES,
+  });
+  res.redirect(url);
+});
+
+app.get("/auth/google/callback", async (req, res) => {
+  try {
+    const { tokens } = await oauth2Client.getToken(req.query.code);
+    oauth2Client.setCredentials(tokens);
+
+    const oauth2 = google.oauth2({
+      auth: oauth2Client,
+      version: "v2",
+    });
+
+    const userInfo = await oauth2.userinfo.get();
+    const account = userInfo.data;
+
+    // Check or insert user into the database
+    const currentuser = await pool.query(
+      "SELECT * FROM users WHERE googleid=$1",
+      [account.id]
+    );
+
+    if (currentuser.rows.length === 0) {
+      await pool.query(
+        "INSERT INTO users(googleid, username, email) VALUES($1, $2, $3)",
+        [account.id, account.name, account.email]
+      );
     }
-  )
-);
-passport.serializeUser((user, done) => {
-  done(null, user);
-});
-passport.deserializeUser((user, done) => {
-  done(null, user);
-});
-app.get(
-  "/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
-app.get(
-  "/auth/google/home",
-  passport.authenticate("google", { session: true }),
-  (req, res) => {
-    res.redirect(process.env.CLIENT_URL);
+
+    // Save user information in the session
+    req.session.user = {
+      googleid: account.id,
+      username: account.name,
+    };
+
+    res.redirect(process.env.CLIENT_URL); // Redirect to client app
+  } catch (err) {
+    console.error("Error during Google authentication:", err);
+    res.status(500).send("Authentication failed");
   }
-);
-app.get("/search/:receiver", async (req, res) => {
-  const receiver = req.params.receiver;
-  const receiverdata = await pool.query("SELECT * FROM users WHERE email=$1", [
-    receiver,
-  ]);
-  res.send(receiverdata.rows[0]);
 });
+
 app.get("/api/login-status", (req, res) => {
-  if (req.isAuthenticated()) {
-    // User is logged in
-    res.json({ loggedIn: true, user: req.user });
+  if (req.session.user) {
+    res.json({ loggedIn: true, user: req.session.user });
   } else {
-    // User is not logged in
     res.json({ loggedIn: false });
   }
 });
-app.get("/auth/logout", (req, res, next) => {
-  req.logout((err) => {
+
+app.get("/auth/logout", (req, res) => {
+  req.session.destroy((err) => {
     if (err) {
-      return next(err);
+      console.error("Error destroying session:", err);
+      return res.status(500).send("Error logging out");
     }
-    req.session.destroy((err) => {
-      if (err) {
-        console.error("Error destroying session:", err);
-        return res.status(500).send("Error logging out");
-      }
-      res.clearCookie("connect.sid", {
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      });
-      res.json({ success: true, message: "Logged out successfully" });
+    res.clearCookie("connect.sid", {
+      path: "/",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
+    res.json({ success: true, message: "Logged out successfully" });
   });
 });
 app.get("/messages/:sendid/:receiveid", async (req, res) => {
@@ -230,6 +222,6 @@ app.delete("/friends/:userid/:friendId", async (req, res) => {
 app.get("/", (req, res) => {
   res.send(req.user);
 });
-server.listen(8000, () => {
+server.listen(process.env.port || 8000, () => {
   console.log("Server Up and Running");
 });

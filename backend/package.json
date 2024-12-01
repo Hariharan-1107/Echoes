@@ -17,6 +17,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "express-session": "^1.18.1",
+    "googleapis": "^144.0.0",
     "http": "^0.0.1-security",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
