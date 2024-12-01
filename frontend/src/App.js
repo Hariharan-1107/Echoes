@@ -18,17 +18,16 @@ function App() {
     if (userData) {
       try {
         // Parse the user data and set it
-        setUser(userData);
+        const parsedUser = JSON.parse(decodeURIComponent(userData));
         setLogin(true);
 
         // Store the user data in localStorage for persistence
+        localStorage.setItem("user", JSON.stringify(parsedUser));
 
         // Clean the URL to remove the query parameters
         const newUrl = window.location.origin + window.location.pathname;
         window.history.replaceState({}, document.title, newUrl);
-        console.log(userData);
-        console.log(userData.googleid);
-        console.log(user);
+        console.log(parsedUser);
       } catch (error) {
         console.error("Failed to parse user data:", error);
       }
