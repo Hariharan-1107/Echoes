@@ -183,6 +183,15 @@ io.on("connection", (socket) => {
     userRooms.delete(socket.id); // Remove user from tracked rooms on disconnect
   });
 });
+
+app.get("/search/:receiver", async (req, res) => {
+  const receiver = req.params.receiver;
+  const receiverdata = await pool.query("SELECT * FROM users WHERE email=$1", [
+    receiver,
+  ]);
+  res.send(receiverdata.rows[0]);
+});
+
 app.get("/friends/:id", async (req, res) => {
   const id = req.params.id;
   const receiversid = await pool.query(
