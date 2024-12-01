@@ -27,6 +27,7 @@ function App() {
         const newUrl = window.location.origin + window.location.pathname;
         window.history.replaceState({}, document.title, newUrl);
         console.log(userData);
+        console.log(userData.googleid);
         console.log(user);
       } catch (error) {
         console.error("Failed to parse user data:", error);
