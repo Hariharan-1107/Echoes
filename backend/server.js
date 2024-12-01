@@ -115,11 +115,14 @@ app.get("/auth/google/home", async (req, res) => {
   }
 });
 
-app.get("/api/login-status/:id", (req, res) => {
+app.get("/api/login-status/:id", async (req, res) => {
   const id = req.params.id;
   console.log(id);
-  if (req.session.user) {
-    res.json({ loggedIn: true, user: req.session.user });
+  if (id) {
+    const user = await pool.query("SELECT * from users where googleid=$1", [
+      id,
+    ]);
+    res.json({ loggedIn: true, user: user });
   } else {
     res.json({ loggedIn: false });
   }
