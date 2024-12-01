@@ -6,7 +6,6 @@ export default function Searchpeople({ user, friends, setFriends }) {
   const [receiver, setReceiver] = useState("");
   const [receiverdata, setReceiverdata] = useState(null);
   const [isOpen, setIsOpen] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -18,16 +17,17 @@ export default function Searchpeople({ user, friends, setFriends }) {
         if (response.data.username) {
           setReceiverdata(response.data);
           setIsOpen(true);
-          setErrorMessage(""); // Clear error if user is found
         } else {
           setReceiverdata(null);
-          setErrorMessage("No user found with this email.");
+          alert("No user found with this email.");
         }
       }
+      setReceiver(""); // Clear the search box after the search
     } catch (err) {
       console.error(err);
       setReceiverdata(null);
-      setErrorMessage("Error while searching. Please try again.");
+      alert("Error while searching. Please try again.");
+      setReceiver(""); // Clear the search box in case of error
     }
   };
 
@@ -52,11 +52,6 @@ export default function Searchpeople({ user, friends, setFriends }) {
           Search
         </button>
       </form>
-
-      {/* Error message displayed below the search bar */}
-      {errorMessage && (
-        <div className="text-red-500 font-medium mt-2">{errorMessage}</div>
-      )}
 
       {receiverdata && receiverdata.username && (
         <div className="flex justify-center mt-6">
