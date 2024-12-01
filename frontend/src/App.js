@@ -65,17 +65,24 @@ function App() {
             <h1 className="text-5xl font-bold drop-shadow-lg text-gray-700">
               Welcome to Echoes
             </h1>
-            <button
-              onClick={handleLogin}
-              className="flex items-center justify-center px-6 py-3 bg-navy text-white font-medium rounded-lg shadow-lg hover:bg-blue-900"
-            >
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png"
-                alt="Google"
-                className="w-5 h-5 mr-2"
-              />
-              Continue with Google
-            </button>
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200">
+              <div className="text-center space-y-6">
+                <h1 className="text-4xl font-bold text-gray-800">
+                  Welcome to Echoes
+                </h1>
+                <button
+                  onClick={handleLogin}
+                  className="flex items-center justify-center px-6 py-3 bg-navy text-white font-medium rounded-lg shadow-lg hover:bg-blue-900"
+                >
+                  <img
+                    src="https://www.gstatic.com/images/branding/product/1x/gsa_android_512dp.png"
+                    alt="Google"
+                    className="w-5 h-5 mr-2"
+                  />
+                  Continue with Google
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       ) : (
