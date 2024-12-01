@@ -153,9 +153,7 @@ app.get("/search/:receiver", async (req, res) => {
 });
 
 app.get("/api/login-status", (req, res) => {
-  console.log("Login status request received");
-  console.log("Is Authenticated:", req.isAuthenticated());
-  console.log("User object:", req.user);
+  console.log(req.session);
 
   if (req.isAuthenticated()) {
     res.json({ loggedIn: true, user: req.user });
