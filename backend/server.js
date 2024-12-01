@@ -37,6 +37,7 @@ app.use(
   cors({
     credentials: true,
     origin: "https://echoes-1.onrender.com", // Ensure this matches your client
+    httpOnly: false,
   })
 );
 
