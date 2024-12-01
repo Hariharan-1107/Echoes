@@ -55,7 +55,7 @@ app.use(
 const oauth2Client = new google.auth.OAuth2(
   process.env.CLIENT_ID,
   process.env.CLIENT_SECRET,
-  "https://echoes-av5f.onrender.com/auth/google/callback"
+  "https://echoes-av5f.onrender.com/auth/google/home"
 );
 
 // Define scopes
