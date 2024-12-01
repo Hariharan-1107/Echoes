@@ -109,7 +109,7 @@ app.get(
   "/auth/google/home",
   passport.authenticate("google", { session: true }),
   (req, res) => {
-    res.redirect(process.env.CLIENT_URL);
+    res.redirect("https://echoes-1.onrender.com");
   }
 );
 
