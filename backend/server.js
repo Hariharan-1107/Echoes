@@ -33,8 +33,8 @@ const io = new Server(server, {
   cors: {
     origin: "https://echoes-1.onrender.com",
     methods: ["GET", "POST"],
-    credentials: true
-  }
+    credentials: true,
+  },
 });
 
 app.use(
@@ -42,7 +42,7 @@ app.use(
     origin: "https://echoes-1.onrender.com",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"]
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
@@ -106,17 +106,16 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser(async (user, done) => {
   try {
     console.log("Deserializing user:", user);
-    
+
     // Assuming user contains googleid from serialization
-    const result = await pool.query(
-      "SELECT * FROM users WHERE googleid = $1", 
-      [user.googleid]
-    );
+    const result = await pool.query("SELECT * FROM users WHERE googleid = $1", [
+      user.googleid,
+    ]);
 
     if (result.rows.length > 0) {
       done(null, result.rows[0]);
     } else {
-      done(new Error('User not found'));
+      done(new Error("User not found"));
     }
   } catch (err) {
     console.error("Deserialization error:", err);
@@ -145,6 +144,7 @@ app.get("/search/:receiver", async (req, res) => {
 });
 
 app.get("/api/login-status", (req, res) => {
+  console.log(req.passport);
   if (req.isAuthenticated()) {
     // User is logged in
     res.json({ loggedIn: true, user: req.user });
