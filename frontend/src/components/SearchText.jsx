@@ -15,7 +15,6 @@ export default function Text({
 }) {
   const [textArray, setTextArray] = useState([]);
   const [message, setMessage] = useState("");
-  // State to control visibility of the chat box
 
   useEffect(() => {
     const fetchtexts = async () => {
@@ -70,6 +69,7 @@ export default function Text({
       console.log("adding friend...");
       setFriends([...friends, data]);
     }
+    setIsOpen(false); // Close the chat box after adding to friends
   };
 
   return (
@@ -96,16 +96,16 @@ export default function Text({
             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
           />
 
-          <div className="flex justify-between">
+          <div className="flex justify-between items-center space-x-4">
             <button
-              className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex-1"
               onClick={handlenewFriend}
             >
               Add to Friends
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex-1"
             >
               Send
             </button>
