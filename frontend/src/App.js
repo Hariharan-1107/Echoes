@@ -57,17 +57,17 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen text-gray-800">
+    <div className="min-h-screen">
       {!login ? (
-        <div className="flex flex-col items-center justify-center min-h-screen space-y-6">
-          {/* Background wrapper for the welcome section */}
-          <div className="p-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg shadow-lg text-white text-center">
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-500 to-blue-500 text-white">
+          {/* Welcome Content */}
+          <div className="text-center space-y-6">
             <h1 className="text-5xl font-bold drop-shadow-lg">
               Welcome to Echoes
             </h1>
             <button
               onClick={handleLogin}
-              className="mt-6 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-lg"
+              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-lg"
             >
               Continue with Google
             </button>
