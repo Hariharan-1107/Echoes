@@ -153,7 +153,7 @@ app.get("/search/:receiver", async (req, res) => {
 });
 
 app.get("/api/login-status", (req, res) => {
-  console.log(req.session.cookie);
+  console.log(req.session.cookie.user);
 
   if (req.isAuthenticated()) {
     res.json({ loggedIn: true, user: req.user });
