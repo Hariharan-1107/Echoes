@@ -2,32 +2,56 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Searchpeople from "./components/Searchpeople"; // Assuming you have this component
 import Friends from "./components/Friends.jsx";
+
 axios.defaults.withCredentials = true;
+
 function App() {
   const [login, setLogin] = useState(false);
   const [user, setUser] = useState({});
   const [friends, setFriends] = useState([]);
+
   useEffect(() => {
-    const checkLogin = async () => {
+    // Check if user data is passed in the URL query parameters
+    const params = new URLSearchParams(window.location.search);
+    const userData = params.get("userData");
+
+    if (userData) {
       try {
-        const response = await axios.get(
-          `https://echoes-av5f.onrender.com/api/login-status`,
-          {
-            withCredentials: true,
-          }
-        );
-        console.log(response.data);
-        if (response.data.loggedIn) {
-          setLogin(true);
-          setUser(response.data.user);
-        } else {
-          setLogin(false);
-        }
-      } catch (err) {
-        console.error(err);
+        // Parse the user data and set it
+        const parsedUser = JSON.parse(decodeURIComponent(userData));
+        setUser(parsedUser);
+        setLogin(true);
+
+        // Store the user data in localStorage for persistence
+        localStorage.setItem("user", JSON.stringify(parsedUser));
+
+        // Clean the URL to remove the query parameters
+        const newUrl = window.location.origin + window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+      } catch (error) {
+        console.error("Failed to parse user data:", error);
       }
-    };
-    checkLogin();
+    } else {
+      // If no query parameters, verify login status with the server
+      const checkLogin = async () => {
+        try {
+          console.log(user);
+          const response = await axios.get(
+            `https://echoes-av5f.onrender.com/api/login-status`,
+            { withCredentials: true }
+          );
+          if (response.data.loggedIn) {
+            setLogin(true);
+            setUser(response.data.user);
+          } else {
+            setLogin(false);
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      checkLogin();
+    }
   }, []);
 
   const handleLogin = () => {
@@ -35,11 +59,17 @@ function App() {
   };
 
   const handleLogout = async () => {
-    const response = await axios.get(
-      `https://echoes-av5f.onrender.com/auth/logout`
-    );
-    if (response.data.success) {
-      setLogin(false);
+    try {
+      const response = await axios.get(
+        `https://echoes-av5f.onrender.com/auth/logout`
+      );
+      if (response.data.success) {
+        setLogin(false);
+        setUser({});
+        localStorage.removeItem("user");
+      }
+    } catch (err) {
+      console.error("Logout failed:", err);
     }
   };
 
@@ -80,7 +110,7 @@ function App() {
           </div>
 
           {/* Chat Component */}
-          <div className=" flex justify-center item-center h-screen w-full max-w-5xl mx-auto mt-16">
+          <div className="flex justify-center items-center h-screen w-full max-w-5xl mx-auto mt-16">
             <Friends user={user} friends={friends} setFriends={setFriends} />
           </div>
         </div>
