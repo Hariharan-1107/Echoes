@@ -11,7 +11,6 @@ function App() {
   const [friends, setFriends] = useState([]);
 
   useEffect(() => {
-    // Check if user data is stored in localStorage
     const storedUser = localStorage.getItem("user");
 
     if (storedUser) {
@@ -19,18 +18,16 @@ function App() {
       setUser(parsedUser);
       setLogin(true);
     } else {
-      // Check if user data is passed in the URL query parameters
       const params = new URLSearchParams(window.location.search);
       const userData = params.get("userData");
 
       if (userData) {
         try {
           const parsedUser = JSON.parse(decodeURIComponent(userData));
-          localStorage.setItem("user", JSON.stringify(parsedUser)); // Save user data to localStorage
+          localStorage.setItem("user", JSON.stringify(parsedUser));
           setUser(parsedUser);
           setLogin(true);
 
-          // Clean up the URL
           const newUrl = window.location.origin + window.location.pathname;
           window.history.replaceState({}, document.title, newUrl);
         } catch (error) {
@@ -52,7 +49,7 @@ function App() {
       if (response.data.success) {
         setLogin(false);
         setUser({});
-        localStorage.removeItem("user"); // Clear user data from localStorage
+        localStorage.removeItem("user");
       }
     } catch (err) {
       console.error("Logout failed:", err);
@@ -60,13 +57,15 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-purple-500 to-blue-500 text-gray-800">
       {!login ? (
-        <div className="text-center space-y-6">
-          <h1 className="text-4xl font-bold">Welcome to the Chat App</h1>
+        <div className="flex flex-col items-center justify-center min-h-screen space-y-6 text-white">
+          <h1 className="text-5xl font-bold drop-shadow-lg">
+            Welcome to Echoes
+          </h1>
           <button
             onClick={handleLogin}
-            className="px-6 py-3 bg-blue-500 text-white font-medium rounded-lg shadow hover:bg-blue-600"
+            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-lg"
           >
             Continue with Google
           </button>
@@ -91,7 +90,7 @@ function App() {
           </button>
 
           {/* Logo Text 'Echoes' positioned at top-center */}
-          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 text-3xl font-semibold">
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 text-3xl font-semibold text-white">
             Echoes
           </div>
 
