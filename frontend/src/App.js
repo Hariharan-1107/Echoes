@@ -28,6 +28,7 @@ function App() {
         // Clean the URL to remove the query parameters
         const newUrl = window.location.origin + window.location.pathname;
         window.history.replaceState({}, document.title, newUrl);
+        console.log(user);
       } catch (error) {
         console.error("Failed to parse user data:", error);
       }
