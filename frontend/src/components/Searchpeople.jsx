@@ -13,19 +13,20 @@ export default function Searchpeople({ user, friends, setFriends }) {
       const response = await axios.get(
         `https://echoes-av5f.onrender.com/search/${receiver}`
       );
-      if (response.data) {
-        if (response.data.username) {
-          setReceiverdata(response.data);
-          setIsOpen(true);
-        } else {
-          setReceiverdata(null);
-          alert("No user found with this email.");
-        }
+
+      console.log(response.data); // Log the response to see its structure
+
+      if (response.data && response.data.username) {
+        setReceiverdata(response.data);
+        setIsOpen(true);
+      } else {
+        setReceiverdata(null);
+        alert("No user found with this email.");
       }
+
       setReceiver(""); // Clear the search box after the search
     } catch (err) {
       console.error(err);
-      setReceiverdata(null);
       alert("Error while searching. Please try again.");
       setReceiver(""); // Clear the search box in case of error
     }
