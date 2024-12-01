@@ -32,14 +32,17 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "https://echoes-1.onrender.com",
-    credentials: true,
-  },
+    methods: ["GET", "POST"],
+    credentials: true
+  }
 });
 
 app.use(
   cors({
-    credentials: true,
     origin: "https://echoes-1.onrender.com",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"]
   })
 );
 
@@ -98,12 +101,29 @@ passport.use(
 );
 passport.serializeUser((user, done) => {
   console.log("Serializing user:", user);
-  done(null, user);
+  done(null, { googleid: user.googleid });
 });
-passport.deserializeUser((user, done) => {
-  console.log("Deserializing user:", user);
-  done(null, user);
+passport.deserializeUser(async (user, done) => {
+  try {
+    console.log("Deserializing user:", user);
+    
+    // Assuming user contains googleid from serialization
+    const result = await pool.query(
+      "SELECT * FROM users WHERE googleid = $1", 
+      [user.googleid]
+    );
+
+    if (result.rows.length > 0) {
+      done(null, result.rows[0]);
+    } else {
+      done(new Error('User not found'));
+    }
+  } catch (err) {
+    console.error("Deserialization error:", err);
+    done(err);
+  }
 });
+
 app.get(
   "/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
@@ -125,7 +145,6 @@ app.get("/search/:receiver", async (req, res) => {
 });
 
 app.get("/api/login-status", (req, res) => {
-  console.log(req);
   if (req.isAuthenticated()) {
     // User is logged in
     res.json({ loggedIn: true, user: req.user });
