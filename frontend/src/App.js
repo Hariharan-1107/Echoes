@@ -67,13 +67,8 @@ function App() {
             </h1>
             <button
               onClick={handleLogin}
-              className="flex items-center justify-center px-6 py-3 bg-navy text-white font-medium rounded-lg shadow-lg hover:bg-blue-900"
+              className="px-6 py-3 font-medium rounded-lg shadow-lg bg-navy text-white shadow-lg hover:bg-blue-900"
             >
-              <img
-                src="https://www.gstatic.com/images/branding/product/1x/gsa_android_512dp.png"
-                alt="Google"
-                className="w-5 h-5 mr-2"
-              />
               Continue with Google
             </button>
           </div>
