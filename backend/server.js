@@ -43,15 +43,17 @@ app.use(
   })
 );
 
+const PgSession = connectPgSimple(session);
+
 app.use(
   session({
-    store: new (connectPgSimple(session))({
+    store: new PgSession({
       pool: pool, // Use your existing PostgreSQL connection pool
     }),
     secret: process.env.COOKIE_SECRET,
     cookie: {
-      secure: "true", // Secure cookies in production
-      sameSite: "none",
+      secure: process.env.NODE_ENV === "production", // Secure cookies in production
+      sameSite: "none", // Required for cross-origin cookies
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     },
     resave: false,
