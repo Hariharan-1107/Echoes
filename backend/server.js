@@ -52,7 +52,7 @@ app.use(
     }),
     secret: process.env.COOKIE_SECRET,
     cookie: {
-      secure: process.env.NODE_ENV === "production", // Secure cookies in production
+      secure: "true", // Secure cookies in production
       sameSite: "none", // Required for cross-origin cookies
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     },
