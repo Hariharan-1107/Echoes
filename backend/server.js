@@ -44,17 +44,13 @@ const PGStore = connectPgSimple(session);
 
 app.use(
   session({
-    store: new PGStore({
-      pool: pool, // Pass your PostgreSQL pool here
-    }),
     secret: process.env.COOKIE_SECRET,
+    cookie: {
+      secure: true,
+      sameSite: "none",
+    },
     resave: false,
     saveUninitialized: false,
-    cookie: {
-      secure: process.env.NODE_ENV === "production", // Use HTTPS in production
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      httpOnly: true, // Prevent client-side script access to cookies
-    },
   })
 );
 
